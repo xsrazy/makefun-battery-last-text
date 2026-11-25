@@ -30,8 +30,9 @@ def main() -> None:
     os.makedirs(out_dir, exist_ok=True)
     # The grader runs this as an unprivileged user (uid 65534) with the
     # output directory owned by root, so chmod on the directory itself
-    # raises PermissionError. That must never crash the entry: only the
-    # file we write needs its mode fixed, and that file is ours.
+    # raises PermissionError. That must never crash the entry, so the
+    # directory chmod is best-effort only; the file written below is
+    # created and owned by this process, and its chmod always applies.
     try:
         os.chmod(out_dir, 0o755)
     except OSError:
