@@ -28,7 +28,14 @@ def main() -> None:
     validate(ENTRY)
     out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
     os.makedirs(out_dir, exist_ok=True)
-    os.chmod(out_dir, 0o755)
+    # The grader runs this as an unprivileged user (uid 65534) with the
+    # output directory owned by root, so chmod on the directory itself
+    # raises PermissionError. That must never crash the entry: only the
+    # file we write needs its mode fixed, and that file is ours.
+    try:
+        os.chmod(out_dir, 0o755)
+    except OSError:
+        pass
     path = os.path.join(out_dir, "entry.txt")
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(ENTRY)
